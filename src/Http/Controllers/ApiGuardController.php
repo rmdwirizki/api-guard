@@ -42,18 +42,24 @@ class ApiGuardController extends Controller
 
         $this->response = ApiResponseBuilder::build();
         
-        $this->template = $request->get('templateName');    
+        $this->template = $request->get('template');    
     }
 
-    public function json($data)
+    public function json($data, $transformer)
     {
-        $response = ['data' => $data];
-        
-        if($this->template !== NULL)
-        {
-            $response['templateName'] = $this->template;
+        if($this->template !== NULL) {
+            $template = ['template' => $this->template];
+        }
+        else {
+            $template = [];
         }
         
-        return response()->json($response);
+        return $this->response->withCollection(
+            $data, 
+            $transformer,
+            null,
+            null,
+            $template
+        );
     }
 }
