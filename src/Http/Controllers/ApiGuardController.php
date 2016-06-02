@@ -7,6 +7,8 @@ use Chrisbjr\ApiGuard\Builders\ApiResponseBuilder;
 use Illuminate\Routing\Controller;
 use EllipseSynergie\ApiResponse\Laravel\Response;
 
+use Illuminate\Http\Request;
+
 class ApiGuardController extends Controller
 {
 
@@ -26,8 +28,9 @@ class ApiGuardController extends Controller
      * @var array
      */
     protected $apiMethods;
+    protected $template;
 
-    public function __construct()
+    public function __construct(Request $request)
     {
         $serializedApiMethods = serialize($this->apiMethods);
 
@@ -38,6 +41,19 @@ class ApiGuardController extends Controller
         $this->user = ApiGuardAuth::getUser();
 
         $this->response = ApiResponseBuilder::build();
+        
+        $this->template = $request->get('templateName');    
     }
 
+    public function json($data)
+    {
+        $response = ['data' => $data];
+        
+        if($this->template !== NULL)
+        {
+            $response['templateName'] = $this->template;
+        }
+        
+        return response()->json($response);
+    }
 }
