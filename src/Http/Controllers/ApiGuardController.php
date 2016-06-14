@@ -45,7 +45,7 @@ class ApiGuardController extends Controller
         $this->template = $request->get('template');    
     }
 
-    public function json($data, $transformer)
+    public function json($data, $transformer, $isItem=false)
     {
         if($this->template !== NULL) {
             $template = ['template' => $this->template];
@@ -54,12 +54,21 @@ class ApiGuardController extends Controller
             $template = [];
         }
         
-        return $this->response->withCollection(
-            $data, 
-            $transformer,
-            null,
-            null,
-            $template
-        );
+        if (!$isItem){
+            return $this->response->withCollection(
+                $data, 
+                $transformer,
+                null,
+                null,
+                $template
+            );
+        }else{
+            return $this->response->withItem(
+                $data, 
+                $transformer,
+                null,
+                $template
+            );
+        }
     }
 }
