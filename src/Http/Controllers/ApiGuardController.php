@@ -28,7 +28,7 @@ class ApiGuardController extends Controller
      * @var array
      */
     protected $apiMethods;
-    protected $template;
+    protected $meta;
 
     public function __construct(Request $request)
     {
@@ -42,16 +42,13 @@ class ApiGuardController extends Controller
 
         $this->response = ApiResponseBuilder::build();
         
-        $this->template = $request->get('template');    
+        $this->meta = ['template' => $request->get('template')];    
     }
 
-    public function json($data, $transformer, $isItem=false)
+    public function json($data, $transformer, $isItem=false, $withMeta=true)
     {
-        if($this->template !== NULL) {
-            $template = ['template' => $this->template];
-        }
-        else {
-            $template = [];
+        if (!$withMeta) {
+            $this->meta = [];
         }
         
         if (!$isItem){
@@ -60,14 +57,14 @@ class ApiGuardController extends Controller
                 $transformer,
                 null,
                 null,
-                $template
+                $this->meta
             );
         }else{
             return $this->response->withItem(
                 $data, 
                 $transformer,
                 null,
-                $template
+                $this->meta
             );
         }
     }
